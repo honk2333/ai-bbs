@@ -1,5 +1,6 @@
 import Fastify from 'fastify';
 import cookie from '@fastify/cookie';
+import formbody from '@fastify/formbody';
 import multipart from '@fastify/multipart';
 import staticPlugin from '@fastify/static';
 import view from '@fastify/view';
@@ -38,11 +39,12 @@ async function main() {
   const app = Fastify({ logger: true });
 
   await app.register(cookie, {});
+  await app.register(formbody, {});
   await app.register(multipart, {
     limits: { fileSize: 10 * 1024 * 1024 },
   });
 
-  const viewsDir = join(__dirname, 'web', 'views');
+  const viewsDir = join(__dirname, '..', 'web', 'views');
   const partialsDir = join(viewsDir, 'partials');
   const layoutsDir = join(viewsDir, 'layouts');
 
@@ -51,21 +53,20 @@ async function main() {
     for (const file of readdirSync(partialsDir)) {
       if (file.endsWith('.hbs')) {
         const name = file.replace('.hbs', '');
-        partials[name] = readFileSync(join(partialsDir, file), 'utf-8');
+        const content = readFileSync(join(partialsDir, file), 'utf-8');
+        Handlebars.registerPartial(name, content);
       }
     }
   } catch { /* partials dir may not exist yet */ }
 
   await app.register(view, {
     engine: { handlebars: Handlebars },
-    root: join(viewsDir, 'pages'),
-    options: {
-      partials,
-    },
+    root: viewsDir,
+    options: {},
   });
 
   await app.register(staticPlugin, {
-    root: join(__dirname, 'web', 'public'),
+    root: join(__dirname, '..', 'web', 'public'),
     prefix: '/static/',
   });
 
@@ -86,7 +87,7 @@ async function main() {
   app.setErrorHandler(async (error, req, reply) => {
     app.log.error(error);
     if (req.headers.accept?.includes('text/html')) {
-      return reply.code(500).view('error.hbs', {
+      return reply.code(500).view('pages/error.hbs', {
         title: '错误',
         message: error.message,
       });
