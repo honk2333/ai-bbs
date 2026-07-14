@@ -3,7 +3,7 @@ import { nanoid } from 'nanoid';
 import { join, dirname } from 'node:path';
 import { mkdir, writeFile, readFile, unlink } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
-import type { Post, PostWithRelations, PostFormat, PostLayout, PostStatus } from '../../shared/types.ts';
+import type { Post, PostWithRelations, PostFormat, PostLayout, PostStatus, DiscussionState, PostPriority } from '../../shared/types.ts';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -26,6 +26,8 @@ export async function createPost(data: {
   format?: PostFormat;
   layout?: PostLayout;
   status?: PostStatus;
+  discussion_state?: DiscussionState;
+  priority?: PostPriority;
 }): Promise<Post> {
   const db = getDb();
   const id = nanoid(12);
@@ -37,12 +39,12 @@ export async function createPost(data: {
   await writeFile(absPath, data.content, 'utf-8');
 
   db.prepare(`
-    INSERT INTO posts (id, board_id, author_id, title, file_path, format, layout, status, created_at, updated_at)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO posts (id, board_id, author_id, title, file_path, format, layout, status, discussion_state, priority, created_at, updated_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `).run(
     id, data.board_id, data.author_id, data.title,
     filePath, data.format ?? 'markdown', data.layout ?? 'article',
-    data.status ?? 'published', now, now
+    data.status ?? 'published', data.discussion_state ?? 'open', data.priority ?? 'none', now, now
   );
 
   return db.prepare('SELECT * FROM posts WHERE id = ?').get(id) as Post;
@@ -60,6 +62,8 @@ export async function updatePost(id: string, data: Partial<{
   format: PostFormat;
   layout: PostLayout;
   status: PostStatus;
+  discussion_state: DiscussionState;
+  priority: PostPriority;
 }>): Promise<Post | undefined> {
   const db = getDb();
   const post = db.prepare('SELECT * FROM posts WHERE id = ?').get(id) as Post | undefined;
@@ -78,6 +82,8 @@ export async function updatePost(id: string, data: Partial<{
       format = COALESCE(?, format),
       layout = COALESCE(?, layout),
       status = COALESCE(?, status),
+      discussion_state = COALESCE(?, discussion_state),
+      priority = COALESCE(?, priority),
       updated_at = ?
     WHERE id = ?
   `).run(
@@ -86,6 +92,8 @@ export async function updatePost(id: string, data: Partial<{
     data.format ?? null,
     data.layout ?? null,
     data.status ?? null,
+    data.discussion_state ?? null,
+    data.priority ?? null,
     now, id
   );
 
@@ -121,6 +129,8 @@ export function getPostWithRelations(id: string): PostWithRelations | undefined 
     format: raw.format as PostFormat,
     layout: raw.layout as PostLayout,
     status: raw.status as PostStatus,
+    discussion_state: (raw.discussion_state as DiscussionState) ?? 'open',
+    priority: (raw.priority as PostPriority) ?? 'none',
     created_at: raw.created_at as string,
     updated_at: raw.updated_at as string,
     board: raw.board_slug ? {
@@ -168,6 +178,8 @@ export function getPostsByBoard(boardId: string, page: number = 1, pageSize: num
     format: raw.format as PostFormat,
     layout: raw.layout as PostLayout,
     status: raw.status as PostStatus,
+    discussion_state: (raw.discussion_state as DiscussionState) ?? 'open',
+    priority: (raw.priority as PostPriority) ?? 'none',
     created_at: raw.created_at as string,
     updated_at: raw.updated_at as string,
     board: raw.board_slug ? {
@@ -215,6 +227,8 @@ export function getRecentPosts(page: number = 1, pageSize: number = 20): PostWit
     format: raw.format as PostFormat,
     layout: raw.layout as PostLayout,
     status: raw.status as PostStatus,
+    discussion_state: (raw.discussion_state as DiscussionState) ?? 'open',
+    priority: (raw.priority as PostPriority) ?? 'none',
     created_at: raw.created_at as string,
     updated_at: raw.updated_at as string,
     board: raw.board_slug ? {
@@ -288,6 +302,8 @@ export function searchPosts(query: string, page: number = 1, pageSize: number = 
     format: raw.format as PostFormat,
     layout: raw.layout as PostLayout,
     status: raw.status as PostStatus,
+    discussion_state: (raw.discussion_state as DiscussionState) ?? 'open',
+    priority: (raw.priority as PostPriority) ?? 'none',
     created_at: raw.created_at as string,
     updated_at: raw.updated_at as string,
     board: raw.board_slug ? {

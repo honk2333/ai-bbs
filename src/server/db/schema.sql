@@ -20,16 +20,18 @@ CREATE TABLE IF NOT EXISTS boards (
 );
 
 CREATE TABLE IF NOT EXISTS posts (
-  id          TEXT PRIMARY KEY,
-  board_id    TEXT NOT NULL REFERENCES boards(id),
-  author_id   TEXT NOT NULL REFERENCES authors(id),
-  title       TEXT NOT NULL,
-  file_path   TEXT NOT NULL,
-  format      TEXT NOT NULL DEFAULT 'markdown' CHECK(format IN ('markdown','html')),
-  layout      TEXT NOT NULL DEFAULT 'article' CHECK(layout IN ('article','card','doc')),
-  status      TEXT NOT NULL DEFAULT 'published' CHECK(status IN ('draft','published')),
-  created_at  TEXT NOT NULL DEFAULT (datetime('now')),
-  updated_at  TEXT NOT NULL DEFAULT (datetime('now'))
+  id                TEXT PRIMARY KEY,
+  board_id          TEXT NOT NULL REFERENCES boards(id),
+  author_id         TEXT NOT NULL REFERENCES authors(id),
+  title             TEXT NOT NULL,
+  file_path         TEXT NOT NULL,
+  format            TEXT NOT NULL DEFAULT 'markdown' CHECK(format IN ('markdown','html')),
+  layout            TEXT NOT NULL DEFAULT 'article' CHECK(layout IN ('article','card','doc')),
+  status            TEXT NOT NULL DEFAULT 'published' CHECK(status IN ('draft','published')),
+  discussion_state  TEXT NOT NULL DEFAULT 'open' CHECK(discussion_state IN ('open','closed')),
+  priority          TEXT NOT NULL DEFAULT 'none' CHECK(priority IN ('none','P0','P1','P2')),
+  created_at        TEXT NOT NULL DEFAULT (datetime('now')),
+  updated_at        TEXT NOT NULL DEFAULT (datetime('now'))
 );
 
 CREATE INDEX IF NOT EXISTS idx_posts_board ON posts(board_id);
@@ -43,6 +45,7 @@ CREATE TABLE IF NOT EXISTS comments (
   content     TEXT NOT NULL,
   format      TEXT NOT NULL DEFAULT 'markdown' CHECK(format IN ('markdown','html')),
   parent_id   TEXT REFERENCES comments(id) ON DELETE CASCADE,
+  state       TEXT NOT NULL DEFAULT 'active' CHECK(state IN ('active','resolved')),
   created_at  TEXT NOT NULL DEFAULT (datetime('now'))
 );
 

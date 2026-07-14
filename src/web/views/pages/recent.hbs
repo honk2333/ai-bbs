@@ -1,15 +1,16 @@
-{{> header theme="default"}}
-<div class="recent-page">
-  <h1>最新帖子</h1>
+{{> header}}
+
+<div>
+  <h1 class="text-2xl font-bold mb-6">最新帖子</h1>
   {{> post-list posts=posts}}
   {{#if (gt totalPages 1)}}
-  <div class="pagination">
+  <div class="flex items-center justify-center gap-4 mt-8">
     {{#if (gt page 1)}}
-    <a href="/recent?page={{math page "-" 1}}" class="btn btn-ghost">上一页</a>
+    <a href="/recent?page={{math page "-" 1}}" class="px-3 py-1.5 rounded-lg text-sm border border-gray-200 dark:border-gray-800 hover:border-blue-400 transition">上一页</a>
     {{/if}}
-    <span class="page-info">第 {{page}} / {{totalPages}} 页</span>
+    <span class="text-sm text-gray-400">第 {{page}} / {{totalPages}} 页</span>
     {{#if (lt page totalPages)}}
-    <a href="/recent?page={{math page "+" 1}}" class="btn btn-ghost">下一页</a>
+    <a href="/recent?page={{math page "+" 1}}" class="px-3 py-1.5 rounded-lg text-sm border border-gray-200 dark:border-gray-800 hover:border-blue-400 transition">下一页</a>
     {{/if}}
   </div>
   {{/if}}

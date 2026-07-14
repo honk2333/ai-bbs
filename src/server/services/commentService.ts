@@ -1,6 +1,6 @@
 import { getDb } from '../db/connection.ts';
 import { nanoid } from 'nanoid';
-import type { Comment, CommentWithRelations, CommentFormat } from '../../shared/types.ts';
+import type { Comment, CommentWithRelations, CommentFormat, CommentState } from '../../shared/types.ts';
 
 export function createComment(data: {
   post_id: string;
@@ -8,17 +8,18 @@ export function createComment(data: {
   content: string;
   format?: CommentFormat;
   parent_id?: string | null;
+  state?: CommentState;
 }): Comment {
   const db = getDb();
   const id = nanoid(12);
   const now = new Date().toISOString();
 
   db.prepare(`
-    INSERT INTO comments (id, post_id, author_id, content, format, parent_id, created_at)
-    VALUES (?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO comments (id, post_id, author_id, content, format, parent_id, state, created_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
   `).run(
     id, data.post_id, data.author_id, data.content,
-    data.format ?? 'markdown', data.parent_id ?? null, now
+    data.format ?? 'markdown', data.parent_id ?? null, data.state ?? 'active', now
   );
 
   return db.prepare('SELECT * FROM comments WHERE id = ?').get(id) as Comment;
@@ -46,6 +47,7 @@ export function getCommentsByPost(postId: string): CommentWithRelations[] {
     content: raw.content as string,
     format: raw.format as CommentFormat,
     parent_id: (raw.parent_id as string) ?? null,
+    state: (raw.state as CommentState) ?? 'active',
     created_at: raw.created_at as string,
     author: raw.author_name ? {
       id: raw.author_id as string,
@@ -78,6 +80,12 @@ export function deleteComment(id: string): boolean {
   const db = getDb();
   const result = db.prepare('DELETE FROM comments WHERE id = ?').run(id);
   return result.changes > 0;
+}
+
+export function updateCommentState(id: string, state: CommentState): Comment | undefined {
+  const db = getDb();
+  db.prepare('UPDATE comments SET state = ? WHERE id = ?').run(state, id);
+  return db.prepare('SELECT * FROM comments WHERE id = ?').get(id) as Comment | undefined;
 }
 
 export function getCommentCountByPost(postId: string): number {

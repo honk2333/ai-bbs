@@ -12,7 +12,7 @@ import {
 import { getCommentsByPost } from '../services/commentService.ts';
 import { renderPostContent } from '../services/renderService.ts';
 import { getBoardBySlug } from '../services/boardService.ts';
-import type { PostFormat, PostLayout, PostStatus } from '../../shared/types.ts';
+import type { PostFormat, PostLayout, PostStatus, DiscussionState, PostPriority } from '../../shared/types.ts';
 
 export function registerPostRoutes(app: FastifyInstance) {
   app.get('/posts/new', async (req, reply) => {
@@ -132,6 +132,8 @@ export function registerPostRoutes(app: FastifyInstance) {
       format: (body.format as PostFormat) ?? 'markdown',
       layout: (body.layout as PostLayout) ?? board.default_layout,
       status: (body.status as PostStatus) ?? 'published',
+      discussion_state: (body.discussion_state as DiscussionState) ?? 'open',
+      priority: (body.priority as PostPriority) ?? 'none',
     });
 
     if (req.headers.accept?.includes('text/html')) {
@@ -158,6 +160,8 @@ export function registerPostRoutes(app: FastifyInstance) {
         format: body.format as PostFormat,
         layout: body.layout as PostLayout,
         status: body.status as PostStatus,
+        discussion_state: body.discussion_state as DiscussionState,
+        priority: body.priority as PostPriority,
       });
       if (!post) return reply.code(404).send({ error: 'Not found' });
 

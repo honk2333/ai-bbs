@@ -47,6 +47,20 @@ window.updatePreview = updatePreview;
 window.insertMd = insertMd;
 window.uploadImage = uploadImage;
 
+async function resolveComment(commentId) {
+  try {
+    const res = await fetch(`/api/comments/${commentId}/state`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ state: 'resolved' }),
+    });
+    if (res.ok) location.reload();
+  } catch (e) {
+    alert('操作失败: ' + e.message);
+  }
+}
+window.resolveComment = resolveComment;
+
 document.addEventListener('DOMContentLoaded', function() {
   document.body.addEventListener('htmx:afterRequest', function(evt) {
     const target = evt.detail.target;

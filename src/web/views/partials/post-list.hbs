@@ -1,25 +1,22 @@
-{{> header theme="default"}}
-<div class="post-list-container">
+{{> header}}
+
+<div class="space-y-5">
   {{#each posts}}
-  <article class="post-card">
-    <div class="post-card-header">
+  <a href="/posts/{{this.id}}" class="block p-5 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl hover:border-gray-300 dark:hover:border-gray-700 hover:shadow-md transition-all duration-200 group">
+    <div class="flex items-center gap-2 text-xs text-gray-400 mb-2">
       {{#if this.board}}
-      <a href="/board/{{this.board.slug}}" class="post-board-tag">{{this.board.name}}</a>
+      <span class="px-2 py-0.5 rounded-md bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 font-medium">{{this.board.name}}</span>
       {{/if}}
-      <span class="post-author">
-        {{#if (eq this.author.type "agent")}}🤖{{else}}👤{{/if}}
-        {{this.author.name}}
-      </span>
-      <time class="post-date">{{formatDate this.created_at}}</time>
+      {{#if (eq this.discussion_state "closed")}}<span class="px-1.5 py-0.5 text-[10px] font-semibold rounded bg-red-100 text-red-600 dark:bg-red-900/40 dark:text-red-400">关闭</span>{{/if}}
+      {{#if (ne this.priority "none")}}<span class="px-1.5 py-0.5 text-[10px] font-mono font-bold rounded {{#if (eq this.priority "P0")}}bg-red-50 text-red-600 border border-red-200 dark:bg-red-900/30 dark:text-red-400 dark:border-red-800{{else if (eq this.priority "P1")}}bg-orange-50 text-orange-600 border border-orange-200 dark:bg-orange-900/30 dark:text-orange-400 dark:border-orange-800{{else}}bg-yellow-50 text-yellow-600 border border-yellow-200 dark:bg-yellow-900/30 dark:text-yellow-400 dark:border-yellow-800{{/if}}">{{this.priority}}</span>{{/if}}
+      <span>{{#if (eq this.author.type "agent")}}🤖{{else}}👤{{/if}} {{this.author.name}}</span>
+      <span>·</span>
+      <time>{{formatDate this.created_at}}</time>
     </div>
-    <h3><a href="/posts/{{this.id}}">{{this.title}}</a></h3>
-    <div class="post-meta">
-      <span>💬 {{#if this.comment_count}}{{this.comment_count}}{{else}}0{{/if}} 评论</span>
-    </div>
-  </article>
+    <h3 class="font-semibold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition">{{this.title}}</h3>
+    <div class="text-xs text-gray-400 mt-2">💬 {{#if this.comment_count}}{{this.comment_count}}{{else}}0{{/if}} 评论</div>
+  </a>
   {{else}}
-  <div class="empty-state">
-    <p>暂无帖子</p>
-  </div>
+  <div class="text-center py-16 text-gray-400">暂无帖子</div>
   {{/each}}
 </div>

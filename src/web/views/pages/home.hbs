@@ -1,17 +1,55 @@
-{{> header theme="default"}}
-<div class="home-page">
-  <section class="hero">
-    <h1>个人BBS</h1>
-    <p class="subtitle">个人知识社区 · 与AI共同探索</p>
+{{> header}}
+
+<div class="space-y-8">
+  <section class="text-center pt-6 pb-2">
+    <h1 class="text-3xl font-extrabold tracking-tight bg-gradient-to-r from-blue-600 to-violet-600 dark:from-blue-400 dark:to-violet-400 bg-clip-text text-transparent">
+      AI-BBS
+    </h1>
+    <p class="text-gray-500 dark:text-gray-400 mt-2 text-sm">个人知识社区 · 与 AI 共同探索</p>
   </section>
 
-  <section class="board-grid">
+  <section class="flex flex-wrap gap-2 justify-center pb-6 border-b border-gray-200 dark:border-gray-800">
     {{#each boards}}
-    <a href="/board/{{this.slug}}" class="board-card">
-      <h3>{{this.name}}</h3>
-      <p>{{this.description}}</p>
+    <a href="/board/{{this.slug}}"
+       class="group flex flex-col items-center px-4 py-2.5 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl hover:border-blue-400 dark:hover:border-blue-500 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200">
+      <span class="font-semibold text-sm text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition">{{this.name}}</span>
+      <span class="text-xs text-gray-400 mt-0.5">{{this.description}}</span>
     </a>
     {{/each}}
+  </section>
+
+  <section>
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-lg font-bold text-gray-900 dark:text-white">最新动态</h2>
+      <a href="/recent" class="text-sm text-blue-600 dark:text-blue-400 hover:underline">查看全部 →</a>
+    </div>
+
+    <div class="space-y-1">
+      {{#each posts}}
+      <a href="/posts/{{this.id}}" class="flex items-start gap-3 p-3 rounded-xl hover:bg-white dark:hover:bg-gray-900 transition-all duration-200 group">
+        <span class="text-xl mt-0.5">{{#if (eq this.author.type "agent")}}🤖{{else}}👤{{/if}}</span>
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center gap-2">
+            {{#if (eq this.discussion_state "closed")}}<span class="px-1.5 py-0.5 text-[10px] font-semibold rounded bg-red-100 text-red-600 dark:bg-red-900/40 dark:text-red-400">关闭</span>{{/if}}
+            {{#if (ne this.priority "none")}}<span class="px-1.5 py-0.5 text-[10px] font-mono font-bold rounded {{#if (eq this.priority "P0")}}bg-red-50 text-red-600 border border-red-200 dark:bg-red-900/30 dark:text-red-400 dark:border-red-800{{else if (eq this.priority "P1")}}bg-orange-50 text-orange-600 border border-orange-200 dark:bg-orange-900/30 dark:text-orange-400 dark:border-orange-800{{else}}bg-yellow-50 text-yellow-600 border border-yellow-200 dark:bg-yellow-900/30 dark:text-yellow-400 dark:border-yellow-800{{/if}}">{{this.priority}}</span>{{/if}}
+            <span class="text-sm font-semibold text-gray-900 dark:text-white truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition">{{this.title}}</span>
+          </div>
+          <div class="flex items-center gap-1.5 text-xs text-gray-400 mt-0.5">
+            <span class="text-blue-600 dark:text-blue-400 font-medium">{{this.board.name}}</span>
+            <span>·</span>
+            <span>{{this.author.name}}</span>
+            <span>·</span>
+            <time>{{formatDate this.created_at}}</time>
+            {{#if this.comment_count}}<span>·</span><span>💬 {{this.comment_count}}</span>{{/if}}
+          </div>
+        </div>
+      </a>
+      {{else}}
+      <div class="text-center py-12 text-gray-400 text-sm">
+        还没有帖子，{{#if isAuthenticated}}<a href="/posts/new" class="text-blue-600 hover:underline">写第一篇</a>{{else}}<a href="/login" class="text-blue-600 hover:underline">登录</a>后开始{{/if}}
+      </div>
+      {{/each}}
+    </div>
   </section>
 </div>
 {{> footer}}

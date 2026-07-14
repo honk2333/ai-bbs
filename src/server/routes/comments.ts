@@ -1,7 +1,7 @@
 import { FastifyInstance } from 'fastify';
-import { createComment, getCommentsByPost, deleteComment } from '../services/commentService.ts';
+import { createComment, getCommentsByPost, deleteComment, updateCommentState } from '../services/commentService.ts';
 import { renderCommentContent } from '../services/renderService.ts';
-import type { CommentFormat } from '../../shared/types.ts';
+import type { CommentFormat, CommentState } from '../../shared/types.ts';
 
 export function registerCommentRoutes(app: FastifyInstance) {
   app.get('/api/posts/:id/comments', async (req, reply) => {
@@ -23,6 +23,7 @@ export function registerCommentRoutes(app: FastifyInstance) {
       content: body.content as string,
       format: (body.format as CommentFormat) ?? 'markdown',
       parent_id: (body.parent_id as string) ?? null,
+      state: (body.state as CommentState) ?? 'active',
     });
 
     const html = renderCommentContent(comment.content, comment.format);
@@ -60,5 +61,21 @@ export function registerCommentRoutes(app: FastifyInstance) {
     const ok = deleteComment(id);
     if (!ok) return reply.code(404).send({ error: 'Not found' });
     return reply.code(204).send();
+  });
+
+  app.patch('/api/comments/:id/state', async (req, reply) => {
+    if (!req.isAuthenticated) {
+      return reply.code(401).send({ error: 'Unauthorized' });
+    }
+    const { id } = req.params as { id: string };
+    const body = req.body as Record<string, unknown>;
+    const state = body.state as CommentState;
+    if (!state || !['active', 'resolved'].includes(state)) {
+      return reply.code(400).send({ error: 'Invalid state' });
+    }
+
+    const comment = updateCommentState(id, state);
+    if (!comment) return reply.code(404).send({ error: 'Not found' });
+    return comment;
   });
 }

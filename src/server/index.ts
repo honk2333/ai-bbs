@@ -84,6 +84,10 @@ async function main() {
   registerCommentRoutes(app);
   registerUploadRoutes(app);
 
+  app.get('/help', async (req, reply) => {
+    return reply.redirect('/static/api-docs.html');
+  });
+
   app.setErrorHandler(async (error, req, reply) => {
     app.log.error(error);
     if (req.headers.accept?.includes('text/html')) {

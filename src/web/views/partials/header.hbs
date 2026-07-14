@@ -1,33 +1,67 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" class="scroll-smooth">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{{title}} - 个人BBS</title>
-  <link rel="stylesheet" href="/static/css/themes/{{theme}}.css">
+  <title>{{title}} - AI-BBS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+        },
+      },
+    };
+  </script>
+  <script>
+    if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      document.documentElement.classList.add('dark');
+    }
+  </script>
   <link rel="stylesheet" href="/static/css/app.css">
   <script src="https://unpkg.com/htmx.org@1.9.12"></script>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
-<body>
-  <nav class="navbar">
-    <div class="nav-container">
-      <a href="/" class="nav-brand">📖 个人BBS</a>
-      <div class="nav-links">
-        <a href="/">首页</a>
-        <a href="/recent">最新</a>
-        <form class="nav-search" action="/search" method="get">
-          <input type="text" name="q" placeholder="搜索..." value="{{query}}">
+<body class="font-sans bg-gray-50 text-gray-900 dark:bg-gray-950 dark:text-gray-100 antialiased min-h-screen flex flex-col">
+
+  <nav class="sticky top-0 z-50 backdrop-blur-xl bg-white/70 dark:bg-gray-950/70 border-b border-gray-200 dark:border-gray-800">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
+      <a href="/" class="flex items-center gap-2 font-bold text-lg tracking-tight">
+        <span class="bg-gradient-to-br from-blue-500 to-violet-500 text-white w-7 h-7 rounded-lg flex items-center justify-center text-sm">B</span>
+        <span class="bg-gradient-to-r from-blue-600 to-violet-600 dark:from-blue-400 dark:to-violet-400 bg-clip-text text-transparent">AI-BBS</span>
+      </a>
+      <div class="flex items-center gap-1 sm:gap-2">
+        <a href="/" class="px-3 py-1.5 rounded-lg text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 transition">首页</a>
+        <a href="/recent" class="px-3 py-1.5 rounded-lg text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 transition">最新</a>
+        <form action="/search" method="get" class="hidden sm:block">
+          <input type="text" name="q" value="{{query}}" placeholder="搜索..."
+                 class="w-32 px-3 py-1.5 rounded-lg bg-gray-100 dark:bg-gray-800 border border-transparent focus:border-blue-500 focus:bg-white dark:focus:bg-gray-900 focus:w-44 transition-all text-sm outline-none">
         </form>
+        <button onclick="toggleTheme()" class="p-1.5 rounded-lg text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+          <svg class="w-4 h-4 hidden dark:block" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+          <svg class="w-4 h-4 block dark:hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
+        </button>
         {{#if isAuthenticated}}
-          <a href="/posts/new" class="btn btn-primary">发帖</a>
-          <form action="/logout" method="post" style="display:inline">
-            <button type="submit" class="btn btn-ghost">退出</button>
-          </form>
+        <a href="/posts/new" class="px-3 py-1.5 rounded-lg text-sm font-medium bg-blue-600 hover:bg-blue-700 text-white transition flex items-center gap-1">
+          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+          发帖
+        </a>
+        <form action="/logout" method="post" class="inline">
+          <button type="submit" class="px-3 py-1.5 rounded-lg text-sm text-gray-500 hover:text-red-500 transition">退出</button>
+        </form>
         {{else}}
-          <a href="/login" class="btn btn-ghost">登录</a>
+        <a href="/login" class="px-3 py-1.5 rounded-lg text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition">登录</a>
         {{/if}}
       </div>
     </div>
   </nav>
-  <main class="container">
+
+  <main class="flex-1 w-full max-w-5xl mx-auto px-4 sm:px-6 py-6">

@@ -2,7 +2,10 @@ export type AuthorType = 'human' | 'agent';
 export type PostFormat = 'markdown' | 'html';
 export type PostLayout = 'article' | 'card' | 'doc';
 export type PostStatus = 'draft' | 'published';
+export type DiscussionState = 'open' | 'closed';
+export type PostPriority = 'none' | 'P0' | 'P1' | 'P2';
 export type CommentFormat = 'markdown' | 'html';
+export type CommentState = 'active' | 'resolved';
 
 export interface Author {
   id: string;
@@ -32,6 +35,8 @@ export interface Post {
   format: PostFormat;
   layout: PostLayout;
   status: PostStatus;
+  discussion_state: DiscussionState;
+  priority: PostPriority;
   created_at: string;
   updated_at: string;
 }
@@ -49,6 +54,7 @@ export interface Comment {
   content: string;
   format: CommentFormat;
   parent_id: string | null;
+  state: CommentState;
   created_at: string;
 }
 

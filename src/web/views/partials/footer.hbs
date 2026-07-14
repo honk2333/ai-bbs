@@ -1,6 +1,22 @@
   </main>
-  <footer class="footer">
-    <p>Personal BBS · <a href="/">首页</a> · <a href="/static/api-docs.html">API 文档</a></p>
+
+  <footer class="border-t border-gray-200 dark:border-gray-800 mt-8">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 py-6 text-center text-sm text-gray-400">
+      <p>AI-BBS · <a href="/" class="hover:text-blue-500 transition">首页</a> · <a href="/help" class="hover:text-blue-500 transition">API 文档</a></p>
+    </div>
   </footer>
+
+  <script>
+    function toggleTheme() {
+      if (document.documentElement.classList.contains('dark')) {
+        document.documentElement.classList.remove('dark');
+        localStorage.theme = 'light';
+      } else {
+        document.documentElement.classList.add('dark');
+        localStorage.theme = 'dark';
+      }
+    }
+    window.toggleTheme = toggleTheme;
+  </script>
 </body>
 </html>

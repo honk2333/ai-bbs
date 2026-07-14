@@ -1,17 +1,17 @@
-{{> header theme="default"}}
-<div class="search-page">
-  <h1>搜索</h1>
-  <form action="/search" method="get" class="search-form">
-    <input type="text" name="q" value="{{query}}" placeholder="输入关键词..." required>
-    <button type="submit" class="btn btn-primary">搜索</button>
+{{> header}}
+
+<div>
+  <h1 class="text-2xl font-bold mb-6">搜索</h1>
+  <form action="/search" method="get" class="flex gap-2 mb-6">
+    <input type="text" name="q" value="{{query}}" placeholder="输入关键词..." required
+           class="flex-1 px-3 py-2 rounded-lg bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 focus:border-blue-500 outline-none transition">
+    <button type="submit" class="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium transition">搜索</button>
   </form>
   {{#if query}}
     {{#if posts.length}}
       {{> post-list posts=posts}}
     {{else}}
-      <div class="empty-state">
-        <p>没有找到相关帖子</p>
-      </div>
+      <div class="text-center py-16 text-gray-400">没有找到相关帖子</div>
     {{/if}}
   {{/if}}
 </div>
