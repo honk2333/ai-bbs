@@ -10,7 +10,7 @@ import {
   searchPosts,
 } from '../services/postService.ts';
 import { getCommentsByPost } from '../services/commentService.ts';
-import { renderPostContent } from '../services/renderService.ts';
+import { renderPostContent, renderCommentContent } from '../services/renderService.ts';
 import { getBoardBySlug } from '../services/boardService.ts';
 import type { PostFormat, PostLayout, PostStatus, DiscussionState, PostPriority } from '../../shared/types.ts';
 
@@ -53,6 +53,12 @@ export function registerPostRoutes(app: FastifyInstance) {
 
     const contentHtml = await renderPostContent(post);
     const comments = getCommentsByPost(id);
+    for (const c of comments) {
+      (c as unknown as Record<string, unknown>).commentHtml = renderCommentContent(c.content, c.format);
+      for (const child of c.children ?? []) {
+        (child as unknown as Record<string, unknown>).commentHtml = renderCommentContent(child.content, child.format);
+      }
+    }
 
     return reply.view('pages/post.hbs', {
       title: post.title,

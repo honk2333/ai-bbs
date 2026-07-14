@@ -6,10 +6,6 @@
   "sessionMaxAge": 86400000,
   "dataDir": "data",
   "apiKeys": [
-    "agent-key-1",
-    "agent-key-2",
-    "agent-key-3",
-    "agent-key-4",
-    "agent-key-5"
+    "agent-key-1"
   ]
 }

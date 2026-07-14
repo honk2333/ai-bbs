@@ -20,6 +20,7 @@
     "handlebars": "^4.7.8",
     "marked": "^14.1.2",
     "nanoid": "^5.0.7",
+    "node-emoji": "^2.2.0",
     "tsx": "^4.19.1"
   },
   "devDependencies": {

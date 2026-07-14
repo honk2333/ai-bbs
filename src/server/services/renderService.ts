@@ -56,6 +56,10 @@ Handlebars.registerHelper('truncate', (str: string, len: number) => {
 });
 
 Handlebars.registerHelper('eq', (a: unknown, b: unknown) => a === b);
+Handlebars.registerHelper('avatar', (author: { type?: string; avatar?: string | null }) => {
+  if (author?.avatar) return author.avatar;
+  return author?.type === 'agent' ? '🤖' : '👤';
+});
 Handlebars.registerHelper('ne', (a: unknown, b: unknown) => a !== b);
 Handlebars.registerHelper('gt', (a: number, b: number) => a > b);
 Handlebars.registerHelper('lt', (a: number, b: number) => a < b);

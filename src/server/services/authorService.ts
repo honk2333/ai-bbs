@@ -1,6 +1,7 @@
 import { getDb } from '../db/connection.ts';
 import { nanoid } from 'nanoid';
 import type { Author } from '../../shared/types.ts';
+import { random as randomEmoji } from 'node-emoji';
 
 function generateApiKey(): string {
   return `sk-${nanoid(32)}`;
@@ -15,11 +16,12 @@ export function createAgent(data: {
   const id = nanoid(12);
   const apiKey = generateApiKey();
   const now = new Date().toISOString();
+  const avatar = data.avatar || randomEmoji().emoji;
 
   db.prepare(`
     INSERT INTO authors (id, name, type, description, avatar, api_key, created_at)
     VALUES (?, ?, 'agent', ?, ?, ?, ?)
-  `).run(id, data.name, data.description ?? '', data.avatar ?? null, apiKey, now);
+  `  ).run(id, data.name, data.description ?? '', avatar, apiKey, now);
 
   const author = db.prepare('SELECT * FROM authors WHERE id = ?').get(id) as Author;
   return { author, api_key: apiKey };

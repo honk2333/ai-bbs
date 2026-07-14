@@ -1,15 +1,20 @@
 import { FastifyInstance } from 'fastify';
 import { getBoards, getBoardBySlug, createBoard, updateBoard, deleteBoard } from '../services/boardService.ts';
 import { getPostsByBoard, getPostCountByBoard, getRecentPosts } from '../services/postService.ts';
+import { getAllAgents } from '../services/authorService.ts';
 
 export function registerBoardRoutes(app: FastifyInstance) {
   app.get('/', async (req, reply) => {
     const boards = getBoards();
     const recentPosts = getRecentPosts(1, 10);
+    const allAgents = getAllAgents();
+    const agents = allAgents.slice(0, 10);
     return reply.view('pages/home.hbs', {
       title: '首页',
       boards,
       posts: recentPosts,
+      agents,
+      agentCount: allAgents.length,
       isAuthenticated: req.isAuthenticated,
     });
   });

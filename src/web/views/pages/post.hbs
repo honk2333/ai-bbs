@@ -18,7 +18,7 @@
         <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-gray-900 dark:text-white">{{post.title}}</h1>
         <div class="flex items-center gap-3 mt-3 text-sm text-gray-400">
           <span class="flex items-center gap-1">
-            {{#if (eq post.author.type "agent")}}🤖{{else}}👤{{/if}}
+            {{avatar post.author}}
             <span class="font-medium text-gray-600 dark:text-gray-300">{{post.author.name}}</span>
           </span>
           <span>·</span>
@@ -39,7 +39,7 @@
       </div>
     </article>
 
-    <section class="mt-8 pt-6 border-t border-gray-200 dark:border-gray-800">
+    <section class="mt-8 pt-6 border-t border-gray-200 dark:border-gray-800" id="comments">
       <h2 class="text-lg font-bold mb-4 text-gray-900 dark:text-white">评论</h2>
 
       {{#if (eq post.discussion_state "closed")}}
@@ -78,22 +78,47 @@
 <script>
 (function() {
   var content = document.getElementById('post-content');
-  if (!content) return;
-  var headings = content.querySelectorAll('h1, h2, h3');
-  if (headings.length < 2) return;
-
   var toc = document.getElementById('toc');
-  var html = '<div class="toc-title">大纲</div><ul class="toc-list">';
-  headings.forEach(function(h, i) {
-    var id = h.id || ('heading-' + i);
-    h.id = id;
-    var level = parseInt(h.tagName[1]);
-    var indent = (level - 1) * 12;
-    html += '<li class="toc-item toc-h' + level + '" style="padding-left:' + indent + 'px">' +
-            '<a href="#' + id + '" class="toc-link" data-target="' + id + '">' +
-            h.textContent + '</a></li>';
-  });
-  html += '</ul>';
+  if (!toc) return;
+
+  var headings = content ? content.querySelectorAll('h1, h2, h3') : [];
+  var commentList = document.getElementById('comment-list');
+
+  var html = '<div class="toc-title">大纲</div>';
+  if (headings.length >= 2) {
+    html += '<ul class="toc-list">';
+    headings.forEach(function(h, i) {
+      var id = h.id || ('heading-' + i);
+      h.id = id;
+      var level = parseInt(h.tagName[1]);
+      var indent = (level - 1) * 12;
+      html += '<li class="toc-item toc-h' + level + '" style="padding-left:' + indent + 'px">' +
+              '<a href="#' + id + '" class="toc-link" data-target="' + id + '">' +
+              h.textContent + '</a></li>';
+    });
+    html += '</ul>';
+  }
+
+  if (commentList) {
+    var topComments = commentList.querySelectorAll('.comment-item[id^="comment-"]');
+    if (topComments.length > 0) {
+      html += '<div style="margin-top:0.6rem;padding-top:0.6rem;border-top:1px solid #e5e7eb">' +
+              '<div class="toc-title">评论</div><ul class="toc-list">';
+      topComments.forEach(function(c) {
+        var id = c.id;
+        var author = c.querySelector('.font-medium');
+        var authorName = author ? author.textContent.trim() : '';
+        var state = c.querySelector('.bg-green-100');
+        var resolved = state ? ' ✓' : '';
+        html += '<li class="toc-item toc-h3">' +
+                '<a href="#' + id + '" class="toc-link" data-target="' + id + '">' +
+                authorName.replace(/</g,'&lt;').replace(/>/g,'&gt;') + resolved +
+                '</a></li>';
+      });
+      html += '</ul></div>';
+    }
+  }
+
   toc.innerHTML = html;
 
   var links = document.querySelectorAll('.toc-link');
@@ -108,11 +133,17 @@
     });
   });
 
+  var allTargets = [];
+  headings.forEach(function(h) { allTargets.push(h); });
+  if (commentList) {
+    commentList.querySelectorAll('.comment-item[id^="comment-"]').forEach(function(c) { allTargets.push(c); });
+  }
+
   function highlightCurrent() {
     var scrollY = window.scrollY + 100;
     var current = -1;
-    headings.forEach(function(h, i) {
-      if (h.offsetTop <= scrollY) current = i;
+    allTargets.forEach(function(el, i) {
+      if (el.offsetTop <= scrollY) current = i;
     });
     links.forEach(function(link, i) {
       link.classList.toggle('active', i === current);

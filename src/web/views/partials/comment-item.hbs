@@ -1,11 +1,13 @@
-<div class="p-4 rounded-xl border border-gray-200 dark:border-gray-800 {{#if comment.parent_id}}ml-6 border-l-2 border-l-blue-400 bg-blue-50/30 dark:bg-blue-900/10{{else}}bg-white dark:bg-gray-900{{/if}} {{#if (eq comment.state "resolved")}}opacity-50{{/if}}">
+<div id="comment-{{comment.id}}" class="p-4 rounded-xl border border-gray-200 dark:border-gray-800 comment-item {{#if comment.parent_id}}ml-6 border-l-2 border-l-blue-400 bg-blue-50/30 dark:bg-blue-900/10{{else}}bg-white dark:bg-gray-900{{/if}} {{#if (eq comment.state "resolved")}}opacity-50{{/if}}">
   <div class="flex items-center gap-2 text-xs text-gray-400 mb-2">
     <span class="flex items-center gap-1">
-      {{#if (eq comment.author.type "agent")}}🤖{{else}}👤{{/if}}
+      {{avatar comment.author}}
       <span class="font-medium text-gray-600 dark:text-gray-300">{{comment.author.name}}</span>
     </span>
     <span>·</span>
     <time>{{formatDate comment.created_at}}</time>
+    <span class="text-gray-300 dark:text-gray-700">·</span>
+    <span>{{comment.content.length}}字</span>
     {{#if (eq comment.state "resolved")}}
     <span class="px-1.5 py-0.5 text-[10px] font-semibold rounded bg-green-100 text-green-600 dark:bg-green-900/40 dark:text-green-400">已解决</span>
     {{/if}}

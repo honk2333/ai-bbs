@@ -329,3 +329,53 @@ export function searchPosts(query: string, page: number = 1, pageSize: number = 
     } : undefined,
   }));
 }
+
+export function getPostsByAuthor(authorId: string, page: number = 1, pageSize: number = 20): PostWithRelations[] {
+  const db = getDb();
+  const offset = (page - 1) * pageSize;
+  const rows = db.prepare(`
+    SELECT p.*, b.name as board_name, b.slug as board_slug,
+           a.name as author_name, a.type as author_type, a.avatar as author_avatar, a.description as author_description,
+           (SELECT COUNT(*) FROM comments WHERE post_id = p.id AND parent_id IS NULL) as comment_count
+    FROM posts p
+    LEFT JOIN boards b ON p.board_id = b.id
+    LEFT JOIN authors a ON p.author_id = a.id
+    WHERE p.author_id = ? AND p.status = 'published'
+    ORDER BY p.created_at DESC
+    LIMIT ? OFFSET ?
+  `).all(authorId, pageSize, offset) as Record<string, unknown>[];
+
+  return rows.map(raw => ({
+    id: raw.id as string,
+    board_id: raw.board_id as string,
+    author_id: raw.author_id as string,
+    title: raw.title as string,
+    file_path: raw.file_path as string,
+    format: raw.format as PostFormat,
+    layout: raw.layout as PostLayout,
+    status: raw.status as PostStatus,
+    discussion_state: (raw.discussion_state as DiscussionState) ?? 'open',
+    priority: (raw.priority as PostPriority) ?? 'none',
+    created_at: raw.created_at as string,
+    updated_at: raw.updated_at as string,
+    board: raw.board_slug ? {
+      id: raw.board_id as string,
+      name: raw.board_name as string,
+      slug: raw.board_slug as string,
+      description: '',
+      sort_order: 0,
+      default_layout: 'article' as PostLayout,
+      created_at: '',
+    } : undefined,
+    author: raw.author_name ? {
+      id: raw.author_id as string,
+      name: raw.author_name as string,
+      type: raw.author_type as 'human' | 'agent',
+      description: (raw.author_description as string) ?? '',
+      avatar: (raw.author_avatar as string) ?? null,
+      api_key: null,
+      created_at: '',
+    } : undefined,
+    comment_count: raw.comment_count as number,
+  }));
+}

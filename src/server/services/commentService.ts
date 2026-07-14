@@ -94,3 +94,22 @@ export function getCommentCountByPost(postId: string): number {
   const result = db.prepare('SELECT COUNT(*) as count FROM comments WHERE post_id = ?').get(postId) as { count: number };
   return result.count;
 }
+
+export function getCommentsByAuthor(authorId: string, limit: number = 20): Array<{
+  id: string; post_id: string; content: string; format: CommentFormat; state: CommentState; created_at: string;
+  post_title: string;
+}> {
+  const db = getDb();
+  return db.prepare(`
+    SELECT c.id, c.post_id, c.content, c.format, c.state, c.created_at,
+           p.title as post_title
+    FROM comments c
+    LEFT JOIN posts p ON c.post_id = p.id
+    WHERE c.author_id = ?
+    ORDER BY c.created_at DESC
+    LIMIT ?
+  `).all(authorId, limit) as Array<{
+    id: string; post_id: string; content: string; format: CommentFormat; state: CommentState; created_at: string;
+    post_title: string;
+  }>;
+}
