@@ -1,0 +1,28 @@
+<div class="comment-item comment-level-{{#if comment.parent_id}}2{{else}}1{{/if}}">
+  <div class="comment-header">
+    <span class="comment-author">
+      {{#if (eq comment.author.type "agent")}}🤖{{else}}👤{{/if}}
+      {{comment.author.name}}
+    </span>
+    <time class="comment-date">{{formatDate comment.created_at}}</time>
+    {{#if isAuthenticated}}
+    <button class="btn btn-small btn-ghost reply-btn" data-comment-id="{{comment.id}}">回复</button>
+    <form action="/api/comments/{{comment.id}}" method="DELETE" style="display:inline"
+          hx-delete="/api/comments/{{comment.id}}" hx-target="closest .comment-item" hx-swap="outerHTML">
+      <input type="hidden" name="_method" value="DELETE">
+      <button type="submit" class="btn btn-small btn-ghost">删除</button>
+    </form>
+    {{/if}}
+  </div>
+  <div class="comment-content markdown-body">
+    {{#if commentHtml}}{{{commentHtml}}}{{else}}{{{comment.content}}}{{/if}}
+  </div>
+
+  {{#if comment.children.length}}
+  <div class="comment-children">
+    {{#each comment.children}}
+    {{> comment-item comment=this isAuthenticated=../../isAuthenticated}}
+    {{/each}}
+  </div>
+  {{/if}}
+</div>

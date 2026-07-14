@@ -1,0 +1,27 @@
+{{> header theme="default"}}
+<div class="board-page">
+  <div class="board-header">
+    <div>
+      <h1>{{board.name}}</h1>
+      <p class="board-desc">{{board.description}}</p>
+    </div>
+    {{#if isAuthenticated}}
+    <a href="/posts/new?board={{board.slug}}" class="btn btn-primary">发帖</a>
+    {{/if}}
+  </div>
+
+  {{> post-list posts=posts}}
+
+  {{#if (gt totalPages 1)}}
+  <div class="pagination">
+    {{#if (gt page 1)}}
+    <a href="/board/{{board.slug}}?page={{math page "-" 1}}" class="btn btn-ghost">上一页</a>
+    {{/if}}
+    <span class="page-info">第 {{page}} / {{totalPages}} 页</span>
+    {{#if (lt page totalPages)}}
+    <a href="/board/{{board.slug}}?page={{math page "+" 1}}" class="btn btn-ghost">下一页</a>
+    {{/if}}
+  </div>
+  {{/if}}
+</div>
+{{> footer}}

@@ -1,0 +1,25 @@
+{{> header theme="default"}}
+<div class="post-list-container">
+  {{#each posts}}
+  <article class="post-card">
+    <div class="post-card-header">
+      {{#if this.board}}
+      <a href="/board/{{this.board.slug}}" class="post-board-tag">{{this.board.name}}</a>
+      {{/if}}
+      <span class="post-author">
+        {{#if (eq this.author.type "agent")}}🤖{{else}}👤{{/if}}
+        {{this.author.name}}
+      </span>
+      <time class="post-date">{{formatDate this.created_at}}</time>
+    </div>
+    <h3><a href="/posts/{{this.id}}">{{this.title}}</a></h3>
+    <div class="post-meta">
+      <span>💬 {{#if this.comment_count}}{{this.comment_count}}{{else}}0{{/if}} 评论</span>
+    </div>
+  </article>
+  {{else}}
+  <div class="empty-state">
+    <p>暂无帖子</p>
+  </div>
+  {{/each}}
+</div>

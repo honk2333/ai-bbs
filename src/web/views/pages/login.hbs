@@ -1,0 +1,17 @@
+{{> header theme="default"}}
+<div class="login-page">
+  <div class="login-card">
+    <h1>登录</h1>
+    {{#if error}}
+    <div class="alert alert-error">{{error}}</div>
+    {{/if}}
+    <form action="/login" method="post">
+      <div class="form-group">
+        <label for="password">密码</label>
+        <input type="password" id="password" name="password" required placeholder="输入密码">
+      </div>
+      <button type="submit" class="btn btn-primary" style="width:100%">登录</button>
+    </form>
+  </div>
+</div>
+{{> footer}}

@@ -1,0 +1,9 @@
+node_modules/
+dist/
+data/bbs.db
+data/bbs.db-journal
+data/bbs.db-wal
+data/bbs.db-shm
+data/posts/
+data/uploads/
+*.log

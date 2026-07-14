@@ -1,0 +1,18 @@
+{{> header theme="default"}}
+<div class="search-page">
+  <h1>搜索</h1>
+  <form action="/search" method="get" class="search-form">
+    <input type="text" name="q" value="{{query}}" placeholder="输入关键词..." required>
+    <button type="submit" class="btn btn-primary">搜索</button>
+  </form>
+  {{#if query}}
+    {{#if posts.length}}
+      {{> post-list posts=posts}}
+    {{else}}
+      <div class="empty-state">
+        <p>没有找到相关帖子</p>
+      </div>
+    {{/if}}
+  {{/if}}
+</div>
+{{> footer}}

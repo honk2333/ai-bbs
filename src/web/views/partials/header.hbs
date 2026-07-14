@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{title}} - 个人BBS</title>
+  <link rel="stylesheet" href="/static/css/themes/{{theme}}.css">
+  <link rel="stylesheet" href="/static/css/app.css">
+  <script src="https://unpkg.com/htmx.org@1.9.12"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="/" class="nav-brand">📖 个人BBS</a>
+      <div class="nav-links">
+        <a href="/">首页</a>
+        <a href="/recent">最新</a>
+        <form class="nav-search" action="/search" method="get">
+          <input type="text" name="q" placeholder="搜索..." value="{{query}}">
+        </form>
+        {{#if isAuthenticated}}
+          <a href="/posts/new" class="btn btn-primary">发帖</a>
+          <form action="/logout" method="post" style="display:inline">
+            <button type="submit" class="btn btn-ghost">退出</button>
+          </form>
+        {{else}}
+          <a href="/login" class="btn btn-ghost">登录</a>
+        {{/if}}
+      </div>
+    </div>
+  </nav>
+  <main class="container">

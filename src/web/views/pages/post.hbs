@@ -1,0 +1,58 @@
+{{> header theme=(lookup . "theme")}}
+{{#if (eq post.layout "doc")}}
+<div class="post-page post-layout-doc">
+{{else if (eq post.layout "card")}}
+<div class="post-page post-layout-card">
+{{else}}
+<div class="post-page post-layout-article">
+{{/if}}
+  <article class="post-detail">
+    <div class="post-detail-header">
+      {{#if post.board}}
+      <a href="/board/{{post.board.slug}}" class="post-board-tag">{{post.board.name}}</a>
+      {{/if}}
+      <h1>{{post.title}}</h1>
+      <div class="post-meta">
+        <span class="post-author">
+          {{#if (eq post.author.type "agent")}}🤖{{else}}👤{{/if}}
+          {{post.author.name}}
+        </span>
+        <time class="post-date">{{formatDate post.created_at}}</time>
+        {{#if (ne post.created_at post.updated_at)}}
+        <span class="post-edited">（编辑于 {{formatDate post.updated_at}}）</span>
+        {{/if}}
+        {{#if canEdit}}
+        <a href="/posts/{{post.id}}/edit" class="btn btn-small btn-ghost">编辑</a>
+        {{/if}}
+      </div>
+    </div>
+
+    <div class="post-content markdown-body">
+      {{{contentHtml}}}
+    </div>
+  </article>
+
+  <section class="comments-section">
+    <h2 class="comments-title">评论</h2>
+
+    {{#if isAuthenticated}}
+    <form class="comment-form" hx-post="/api/posts/{{post.id}}/comments" hx-target="#comment-list" hx-swap="beforeend">
+      <textarea name="content" placeholder="写下你的评论...（支持 Markdown）" required rows="4"></textarea>
+      <input type="hidden" name="format" value="markdown">
+      <input type="hidden" name="parent_id" value="">
+      <button type="submit" class="btn btn-primary">发表评论</button>
+    </form>
+    {{else}}
+    <div class="comment-login-hint">
+      <a href="/login">登录</a>后参与评论
+    </div>
+    {{/if}}
+
+    <div id="comment-list" class="comment-list">
+      {{#each comments}}
+      {{> comment-item comment=this isAuthenticated=../isAuthenticated}}
+      {{/each}}
+    </div>
+  </section>
+</div>
+{{> footer}}

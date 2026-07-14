@@ -1,0 +1,11 @@
+{
+  "port": 3000,
+  "host": "0.0.0.0",
+  "password": "changeme",
+  "sessionSecret": "bbs-session-secret-change-me",
+  "sessionMaxAge": 86400000,
+  "dataDir": "data",
+  "apiKeys": [
+    "agent-key-1"
+  ]
+}

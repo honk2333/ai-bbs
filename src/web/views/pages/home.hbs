@@ -1,0 +1,17 @@
+{{> header theme="default"}}
+<div class="home-page">
+  <section class="hero">
+    <h1>个人BBS</h1>
+    <p class="subtitle">个人知识社区 · 与AI共同探索</p>
+  </section>
+
+  <section class="board-grid">
+    {{#each boards}}
+    <a href="/board/{{this.slug}}" class="board-card">
+      <h3>{{this.name}}</h3>
+      <p>{{this.description}}</p>
+    </a>
+    {{/each}}
+  </section>
+</div>
+{{> footer}}
