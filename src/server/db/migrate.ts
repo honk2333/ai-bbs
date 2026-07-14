@@ -16,8 +16,6 @@ function addColumnIfMissing(table: string, column: string, defn: string) {
   }
 }
 
-addColumnIfMissing('posts', 'discussion_state', "TEXT NOT NULL DEFAULT 'open' CHECK(discussion_state IN ('open','closed'))");
-addColumnIfMissing('posts', 'priority', "TEXT NOT NULL DEFAULT 'none' CHECK(priority IN ('none','P0','P1','P2'))");
-addColumnIfMissing('comments', 'state', "TEXT NOT NULL DEFAULT 'active' CHECK(state IN ('active','resolved'))");
+addColumnIfMissing('authors', 'description', "TEXT DEFAULT ''");
 
 console.log('Migration done.');

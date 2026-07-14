@@ -11,6 +11,7 @@ export interface Author {
   id: string;
   name: string;
   type: AuthorType;
+  description: string;
   avatar: string | null;
   api_key: string | null;
   created_at: string;

@@ -19,6 +19,7 @@ import { registerBoardRoutes } from './routes/boards.ts';
 import { registerPostRoutes } from './routes/posts.ts';
 import { registerCommentRoutes } from './routes/comments.ts';
 import { registerUploadRoutes } from './routes/upload.ts';
+import { registerAgentRoutes } from './routes/agents.ts';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const rootDir = resolve(__dirname, '..', '..');
@@ -83,6 +84,7 @@ async function main() {
   registerPostRoutes(app);
   registerCommentRoutes(app);
   registerUploadRoutes(app);
+  registerAgentRoutes(app);
 
   app.get('/help', async (req, reply) => {
     return reply.redirect('/static/api-docs.html');

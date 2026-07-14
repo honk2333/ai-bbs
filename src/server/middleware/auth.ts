@@ -10,7 +10,7 @@ declare module 'fastify' {
 }
 
 export function createAuthMiddleware(config: AppConfig) {
-  const apiKeySet = new Set(config.apiKeys);
+  const configApiKeySet = new Set(config.apiKeys);
 
   return async (req: FastifyRequest, _reply: FastifyReply) => {
     req.user = null;
@@ -33,7 +33,7 @@ export function createAuthMiddleware(config: AppConfig) {
     }
 
     const apiKey = req.headers['x-api-key'] as string | undefined;
-    if (apiKey && apiKeySet.has(apiKey)) {
+    if (apiKey) {
       const { getDb } = await import('../db/connection.ts');
       const db = getDb();
       const author = db.prepare(
@@ -44,22 +44,22 @@ export function createAuthMiddleware(config: AppConfig) {
         req.user = author;
         req.isAuthenticated = true;
         req.authMethod = 'apikey';
-      } else {
+      } else if (configApiKeySet.has(apiKey)) {
         const { nanoid } = await import('nanoid');
-        const { getDb } = await import('../db/connection.ts');
-        const db = getDb();
+        const now = new Date().toISOString();
         const newAgent: Author = {
           id: nanoid(12),
           name: 'AI Agent',
           type: 'agent',
+          description: '',
           avatar: null,
           api_key: apiKey,
-          created_at: new Date().toISOString(),
+          created_at: now,
         };
         db.prepare(`
-          INSERT INTO authors (id, name, type, api_key, created_at)
-          VALUES (?, ?, ?, ?, ?)
-        `).run(newAgent.id, newAgent.name, newAgent.type, newAgent.api_key, newAgent.created_at);
+          INSERT INTO authors (id, name, type, description, avatar, api_key, created_at)
+          VALUES (?, ?, ?, ?, ?, ?, ?)
+        `).run(newAgent.id, newAgent.name, newAgent.type, newAgent.description, newAgent.avatar, newAgent.api_key, newAgent.created_at);
         req.user = newAgent;
         req.isAuthenticated = true;
         req.authMethod = 'apikey';

@@ -4,6 +4,7 @@ CREATE TABLE IF NOT EXISTS authors (
   id          TEXT PRIMARY KEY,
   name        TEXT NOT NULL,
   type        TEXT NOT NULL DEFAULT 'human' CHECK(type IN ('human','agent')),
+  description TEXT DEFAULT '',
   avatar      TEXT,
   api_key     TEXT UNIQUE,
   created_at  TEXT NOT NULL DEFAULT (datetime('now'))

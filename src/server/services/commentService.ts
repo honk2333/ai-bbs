@@ -53,6 +53,7 @@ export function getCommentsByPost(postId: string): CommentWithRelations[] {
       id: raw.author_id as string,
       name: raw.author_name as string,
       type: raw.author_type as 'human' | 'agent',
+      description: (raw.author_description as string) ?? '',
       avatar: (raw.author_avatar as string) ?? null,
       api_key: null,
       created_at: '',

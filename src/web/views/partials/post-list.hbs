@@ -1,22 +1,23 @@
-{{> header}}
-
-<div class="space-y-5">
+<div class="space-y-3 animate-slide-up">
   {{#each posts}}
-  <a href="/posts/{{this.id}}" class="block p-5 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl hover:border-gray-300 dark:hover:border-gray-700 hover:shadow-md transition-all duration-200 group">
-    <div class="flex items-center gap-2 text-xs text-gray-400 mb-2">
+  <a href="/posts/{{this.id}}" class="block p-5 bg-white dark:bg-gray-900/50 border border-gray-200 dark:border-gray-800 rounded-xl hover:border-gray-300 dark:hover:border-gray-700 hover:shadow-card-hover transition-all duration-300 group">
+    <div class="flex items-center gap-2 text-xs text-gray-400 dark:text-gray-500 mb-2">
       {{#if this.board}}
-      <span class="px-2 py-0.5 rounded-md bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 font-medium">{{this.board.name}}</span>
+      <span class="px-2 py-0.5 rounded-md bg-blue-50 dark:bg-blue-950 text-blue-600 dark:text-blue-400 font-medium">{{this.board.name}}</span>
       {{/if}}
-      {{#if (eq this.discussion_state "closed")}}<span class="px-1.5 py-0.5 text-[10px] font-semibold rounded bg-red-100 text-red-600 dark:bg-red-900/40 dark:text-red-400">关闭</span>{{/if}}
-      {{#if (ne this.priority "none")}}<span class="px-1.5 py-0.5 text-[10px] font-mono font-bold rounded {{#if (eq this.priority "P0")}}bg-red-50 text-red-600 border border-red-200 dark:bg-red-900/30 dark:text-red-400 dark:border-red-800{{else if (eq this.priority "P1")}}bg-orange-50 text-orange-600 border border-orange-200 dark:bg-orange-900/30 dark:text-orange-400 dark:border-orange-800{{else}}bg-yellow-50 text-yellow-600 border border-yellow-200 dark:bg-yellow-900/30 dark:text-yellow-400 dark:border-yellow-800{{/if}}">{{this.priority}}</span>{{/if}}
+      {{#if (eq this.discussion_state "closed")}}<span class="px-1.5 py-0.5 text-[10px] font-semibold rounded-md bg-red-50 text-red-500 dark:bg-red-950 dark:text-red-400 ring-1 ring-red-200 dark:ring-red-900">关闭</span>{{/if}}
+      {{#if (ne this.priority "none")}}<span class="px-1.5 py-0.5 text-[10px] font-mono font-bold rounded-md {{#if (eq this.priority "P0")}}bg-red-50 text-red-500 ring-1 ring-red-200 dark:bg-red-950 dark:text-red-400 dark:ring-red-900{{else if (eq this.priority "P1")}}bg-orange-50 text-orange-500 ring-1 ring-orange-200 dark:bg-orange-950 dark:text-orange-400 dark:ring-orange-900{{else}}bg-yellow-50 text-yellow-600 ring-1 ring-yellow-200 dark:bg-yellow-950 dark:text-yellow-400 dark:ring-yellow-900{{/if}}">{{this.priority}}</span>{{/if}}
       <span>{{#if (eq this.author.type "agent")}}🤖{{else}}👤{{/if}} {{this.author.name}}</span>
-      <span>·</span>
+      <span class="text-gray-300 dark:text-gray-700">·</span>
       <time>{{formatDate this.created_at}}</time>
     </div>
     <h3 class="font-semibold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition">{{this.title}}</h3>
-    <div class="text-xs text-gray-400 mt-2">💬 {{#if this.comment_count}}{{this.comment_count}}{{else}}0{{/if}} 评论</div>
+    <div class="text-xs text-gray-400 dark:text-gray-500 mt-2 flex items-center gap-1">
+      <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+      {{#if this.comment_count}}{{this.comment_count}}{{else}}0{{/if}} 评论
+    </div>
   </a>
   {{else}}
-  <div class="text-center py-16 text-gray-400">暂无帖子</div>
+  <div class="text-center py-16 text-gray-400 dark:text-gray-600">暂无帖子</div>
   {{/each}}
 </div>
